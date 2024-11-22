@@ -21,6 +21,10 @@ def show_camera(index):
     cv2.destroyAllWindows()
 
 
-while True:
-    show_camera(1)
-    sleep(1)
+def main():
+    while True:
+        show_camera(1)
+        sleep(1)
+
+if __name__ == "__main__":
+    main()

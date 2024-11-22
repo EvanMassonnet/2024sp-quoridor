@@ -38,7 +38,7 @@ def detect_pieces(cap=setup_camera(), debug = False):
     walls_2 = [] # List of tuples with ((x, y), orientation) 
 
     ## the code loops until it detects both players on the board, which is the minimal requirement for an actual game state
-    while player1 == None or player2 == None:
+    while player1 == None or player2 == None or player1 == [0,0] or player2 == [0,0]:
 
         ret = False
         while not ret:
@@ -55,6 +55,7 @@ def detect_pieces(cap=setup_camera(), debug = False):
         frame_walls2, walls_2 = detect_walls(color2, warped_img.copy(), intersections, frame_walls1)
         frame_piece1, player1 = detect_player(color1, warped_img.copy(), intersections, frame_walls2)
         total_frame, player2 = detect_player(color2, warped_img.copy(), intersections, frame_piece1)
+        print(player2)
 
         walls = walls_1 + walls_2
 
@@ -81,6 +82,10 @@ def detect_pieces(cap=setup_camera(), debug = False):
     image_dir_out = os.path.join(script_dir, "camera_output/output.png")
 
     cv2.imwrite(image_dir_out, total_frame)
+
+    print("Player 1: ", player1)
+    print("Player 2: ", player2)
+    print("Walls: ", walls)
     
     return player1, player2, walls
 

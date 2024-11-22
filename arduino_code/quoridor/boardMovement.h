@@ -6,17 +6,21 @@
 #define StepperXPin2 55
 #define StepperXPin3 38
 
-#define StepperYPin1 60
-#define StepperYPin2 61
-#define StepperYPin3 56
+#define StepperY1Pin1 60
+#define StepperY1Pin2 61
+#define StepperY1Pin3 56
+
+#define StepperY2Pin1 26
+#define StepperY2Pin2 28
+#define StepperY2Pin3 24
 
 #define Speed 20 //1400
 #define Acceleration 20 //9000
 
 #define XMinStopPin 3
 #define YMinStopPin 14
-#define CALIBRATION_SPEED 1400
-#define CALIBRATION_STEP 5
+#define CALIBRATION_SPEED 1000
+#define CALIBRATION_STEP 500
 
 #define ServoClawPin 1
 #define ServoRotationPin 1

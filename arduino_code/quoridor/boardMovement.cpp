@@ -9,13 +9,20 @@ AccelStepper X(
   StepperXPin1, 
   StepperXPin2
 );
-AccelStepper Y(
+AccelStepper Y1(
   AccelStepper::DRIVER, 
-  StepperYPin1, 
-  StepperYPin2 
+  StepperY1Pin1, 
+  StepperY1Pin2 
 );
+
+AccelStepper Y2(
+  AccelStepper::DRIVER, 
+  StepperY2Pin1, 
+  StepperY2Pin2 
+);
+
 MultiStepper XY;
-long pos_xy[2] = {0,0};
+long pos_xy[3] = {0,0,0};
 
 bool isClawHigh = true;
 bool isClawClose = false;
@@ -178,14 +185,21 @@ void setupMotors() {
   X.setPinsInverted(false, false, true);
   X.enableOutputs();
 
-  Y.setMaxSpeed(CALIBRATION_SPEED);
-  Y.setAcceleration(Acceleration);
-  Y.setEnablePin(StepperYPin3);
-  Y.setPinsInverted(false, false, true);
-  Y.enableOutputs();
+  Y1.setMaxSpeed(CALIBRATION_SPEED);
+  Y1.setAcceleration(Acceleration);
+  Y1.setEnablePin(StepperY1Pin3);
+  Y1.setPinsInverted(false, false, true);
+  Y1.enableOutputs();
+
+  Y2.setMaxSpeed(CALIBRATION_SPEED);
+  Y2.setAcceleration(Acceleration);
+  Y2.setEnablePin(StepperY2Pin3);
+  Y2.setPinsInverted(true, false, true);
+  Y2.enableOutputs();
 
   XY.addStepper(X);
-  XY.addStepper(Y);
+  XY.addStepper(Y1);
+  XY.addStepper(Y2);
 
   setupGrabber();
 
@@ -196,14 +210,17 @@ void setupMotors() {
 
 void forceStopMotors(){
   X.stop();
-  Y.stop();
+  Y1.stop();
+  Y2.stop();
   X.disableOutputs();
-  Y.disableOutputs();
+  Y1.disableOutputs();
+  Y2.disableOutputs();
 }
 
 void moveToXY(long x, long y){
   pos_xy[0] = x;
   pos_xy[1] = y;
+  pos_xy[2] = y;
   XY.moveTo(pos_xy);
   XY.runSpeedToPosition();
 }
@@ -233,7 +250,8 @@ void playMove(MoveData move_data){
     }
 
   X.enableOutputs();
-  Y.enableOutputs();
+  Y1.enableOutputs();
+  Y2.enableOutputs();
 
   moveToBoardPosition(move_data.old_position, move_data.piece_type);
   rotateTo(move_data.old_orientation);
@@ -257,7 +275,8 @@ void playMove(MoveData move_data){
   goToOrigin();
 
   X.disableOutputs();
-  Y.disableOutputs();
+  Y1.disableOutputs();
+  Y2.disableOutputs();
 }
 
 void moveToBoardPosition(BoardPosition pos, PieceType type){
@@ -321,21 +340,25 @@ void raiseClaw(PieceType type){
 
 void debugStartMotors(){
   X.enableOutputs();
-  Y.enableOutputs();
+  Y1.enableOutputs();
+  Y2.enableOutputs();
 }
 
 //For debug only
 void motorControlLoop(){
-  if (X.distanceToGo() == 0 && Y.distanceToGo() == 0) {
+  if (X.distanceToGo() == 0 && Y1.distanceToGo() == 0 && Y2.distanceToGo() == 0) {
     while (Serial.available() == 0) {}
     String s;
     pos_xy[0] = Serial.parseInt(); 
     pos_xy[1] = Serial.parseInt();
+    pos_xy[2] = pos_xy[1];
     s = Serial.readString();
     Serial.print("x = ");
     Serial.print(pos_xy[0]);
-    Serial.print(" y = ");
+    Serial.print(" y1 = ");
     Serial.print(pos_xy[1]);
+    Serial.print(" y2 = ");
+    Serial.print(pos_xy[2]);
     Serial.println(s);
     XY.moveTo(pos_xy);
   }
@@ -345,7 +368,8 @@ void motorControlLoop(){
 void calibrateMotors() {
 
   X.enableOutputs();
-  Y.enableOutputs();
+  Y1.enableOutputs();
+  Y2.enableOutputs();
 
   while (!digitalRead(XMinStopPin)) {
     X.move(CALIBRATION_STEP);
@@ -354,16 +378,20 @@ void calibrateMotors() {
   Serial.println("0 for X");
 
   while (!digitalRead(YMinStopPin)) {
-    Y.move(-CALIBRATION_STEP);
-    Y.run();
+    Y1.move(-CALIBRATION_STEP);
+    Y2.move(-CALIBRATION_STEP);
+    Y1.run();
+    Y2.run();
   }
   Serial.println("0 for Y");
 
   X.setSpeed(Speed);
-  Y.setSpeed(Speed);
+  Y1.setSpeed(Speed);
+  Y2.setSpeed(Speed);
 
   X.setCurrentPosition(0);
-  Y.setCurrentPosition(0);
+  Y1.setCurrentPosition(0);
+  Y2.setCurrentPosition(0);
 
   forceStopMotors();
 }

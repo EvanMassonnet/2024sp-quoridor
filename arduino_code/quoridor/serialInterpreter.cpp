@@ -44,9 +44,13 @@ void setupInterpreter(){
 }
 
 void waitingForResponseLoop(){
+  Serial.print("waiting ...");
   while (Serial.available() == 0) {}
 
+  Serial.print("Serial Received");
+
   char* duplicate_of_serial_string = strdup(Serial.readString().c_str());
+  Serial.println(duplicate_of_serial_string);
   playMove(getMoveDataFromString(duplicate_of_serial_string));
   free(duplicate_of_serial_string);
 }

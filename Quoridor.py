@@ -121,6 +121,7 @@ def greedy_quoridor_solver(bot_node, player_node, board_walls, debug = False):
 
     if(len(bot_path) <= len(player_path) or free_walls == []):
         if(bot_path[1] == player_path[0]):
+            print("<{}><{}><PLAYER>".format(bot_path[0], bot_path[2]))
             return "<{}><{}><PLAYER>".format(bot_path[0], bot_path[2])
         else:
             return "<{}><{}><PLAYER>".format(bot_path[0], bot_path[1])
@@ -225,7 +226,7 @@ def convertWallTuplesToWalls(input, output):
             output.append((convertTupleToId(wall[0][0], wall[0][1]), "VERTICAL"))
 
 
-ser = serial.Serial('COM6', 9600)
+ser = serial.Serial('COM8', 9600)
 init_free_walls()
 videoCapture = setup_camera()
 time.sleep(5)
